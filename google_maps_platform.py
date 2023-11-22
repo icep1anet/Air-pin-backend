@@ -32,6 +32,7 @@ class GoogleMapsAPI:
         return elevation
 
     def geocode(self, address=None, place_id=None):
+        # 住所またはplace_idを元に住所のgeoデータを取得
         # {'address_components': # [{'long_name': 'センター1号館', 'short_name': 'センター1号館', 'types': ['premise']}, {'long_name': '744', 'short_name': '744', 'types': ['premise']}, {'long_name': 'Motooka', 'short_name': 'Motooka', 'types': ['political', 'sublocality', 'sublocality_level_2']}, {'long_name': 'Nishi Ward', 'short_name': 'Nishi Ward', 'types': ['political', 'sublocality', 'sublocality_level_1']}, {'long_name': 'Fukuoka', 'short_name': 'Fukuoka', 'types': ['locality', 'political']}, {'long_name': 'Fukuoka', 'short_name': 'Fukuoka', 'types': ['administrative_area_level_1', 'political']}, {'long_name': 'Japan', 'short_name': 'JP', 'types': ['country', 'political']}, {'long_name': '819-0385', 'short_name': '819-0385', 'types': ['postal_code']}],
         # 'formatted_address': 'Japan, 〒819-0385 Fukuoka, Nishi Ward, Motooka, ７４４ センター1号館',
         # 'geometry': {'bounds': {'northeast': {'lat': 33.597627, 'lng': 130.2242474}, 'southwest': {'lat': 33.5975196, 'lng': 130.2239923}}, 'location': {'lat': 33.5975765, 'lng': 130.2241188}, 'location_type': 'ROOFTOP', 'viewport': {'northeast': {'lat': 33.5989604802915, 'lng': 130.2253366802915}, 'southwest': {'lat': 33.5962625197085, 'lng': 130.2226387197085}}}, 
