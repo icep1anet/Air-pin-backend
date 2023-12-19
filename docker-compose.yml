@@ -1,0 +1,13 @@
+version: "3"
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    platform: linux/amd64
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./src:/workspace/src
+    env_file:
+      - .env

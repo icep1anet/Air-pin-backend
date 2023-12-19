@@ -1,0 +1,31 @@
+substitutions:
+    _LOCATION: asia-northeast1
+    _REPOSITORY: air-pin-image
+    _SERVICE_NAME: air-pin-backend
+    _IMAGE_NAME: ${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}
+  # ユーザー定義環境変数
+
+steps:
+  # Docker Build
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-f", "Dockerfile", "-t", "${_IMAGE_NAME}", "."]
+    # ["build", "--build-arg", "DOCKER_COMPOSE_VERSION=${_DOCKER_COMPOSE_VERSION}", "-t", "gcr.io/${PROJECT_ID}/docker-compose:latest", "-t", "gcr.io/$PROJECT_ID/docker-compose:${_DOCKER_COMPOSE_VERSION}"]
+    # PROJECT_IDは自動的に置き換わる
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_IMAGE_NAME}']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'air-pin-backend', 
+        '--image', '${_IMAGE_NAME}', 
+        '--region', 'asia-northeast1',
+        '--allow-unauthenticated']
+
+# Store images in Google Artifact Registry
+images:
+- "${_IMAGE_NAME}"
+
+# set timeout
+timeout: 300s
