@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.height import height_router
+from api.height.root import height_router
 
 from starlette.middleware.cors import CORSMiddleware
 
