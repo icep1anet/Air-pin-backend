@@ -21,4 +21,4 @@ ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 EXPOSE $PORT
 
-CMD exec uvicorn --port $PORT --host 0.0.0.0 main:app
+CMD exec uvicorn --port $PORT --host 0.0.0.0 main:app --reload

@@ -1,5 +1,6 @@
+from google.cloud import storage
 import xml.etree.ElementTree as ET
-
+import os
 from shapely.geometry import Point, Polygon
 
 # (lat, long) difference pair by mesh
@@ -15,12 +16,18 @@ test_data = {
     "destLong": 130.2582227
 }
 
-def get_building_height(bldg_lat, bldg_long):
+def get_building_height(bldg_lat, bldg_long, local=False):
     dest = Point(bldg_lat, bldg_long)
     
     path = get_meshcode(bldg_lat, bldg_long)
-    tree = ET.parse(base_path + path)
-    namespaces = {node[0]: node[1] for _, node in ET.iterparse(base_path + path, events=['start-ns'])}
+    if local:
+        tree = ET.parse(base_path + path)
+        namespaces = {node[0]: node[1] for _, node in ET.iterparse(base_path + path, events=['start-ns'])}
+    else:
+        if not os.path.isfile(path):
+            download_blob("air-pin-backend", f"bldg/{path}", path)
+        tree = ET.parse(path)
+        namespaces = {node[0]: node[1] for _, node in ET.iterparse(path, events=['start-ns'])}
     for key, value in namespaces.items(): 
         ET.register_namespace(key, value)
     root = tree.getroot()
@@ -32,8 +39,8 @@ def get_building_height(bldg_lat, bldg_long):
                     # 経度と緯度に分割して取得
                     posList = gml_posList.text.split()
                     if isIncludePoint(dest, posList):
-                        get_ceiling_height(building[0])
-                        return
+                        ceiling_height = get_ceiling_height(building[0])
+                        return ceiling_height
             continue
         foot_print = building[0].findall('{http://www.opengis.net/citygml/building/2.0}lod0FootPrint')
         if foot_print:
@@ -41,9 +48,9 @@ def get_building_height(bldg_lat, bldg_long):
                 # 経度と緯度に分割して取得
                 posList = gml_posList.text.split()
                 if isIncludePoint(dest, posList):
-                    get_ceiling_height(building[0])
-                    return
-    return
+                    ceiling_height = get_ceiling_height(building[0])
+                    return ceiling_height
+    return None
 
 def isIncludePoint(point, posList):
     # 目的地が建物に含まれるか判定
@@ -68,7 +75,7 @@ def get_ceiling_height(building:ET.Element):
     if height and level:
         ceiling_height = float(height)/float(level)
         print(ceiling_height)
-    return
+    return ceiling_height
 
 def get_meshcode(lat, long):
     # meshcodeを緯度経度から探索
@@ -104,11 +111,34 @@ def get_meshcode(lat, long):
     # mesh_code = 50303303
     return f"{mesh_code}_bldg_6697_op.gml"
 
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
 
+    # The ID of your GCS object
+    # source_blob_name = "storage-object-name"
+
+    # The path to which the file should be downloaded
+    # destination_file_name = "local/path/to/file"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    # Construct a client side representation of a blob.
+    # Note `Bucket.blob` differs from `Bucket.get_blob` as it doesn't retrieve
+    # any content from Google Cloud Storage. As we don't need additional data,
+    # using `Bucket.blob` is preferred here.
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
+    print(
+        "Downloaded storage object {} from bucket {} to local file {}.".format(
+            source_blob_name, bucket_name, destination_file_name
+        )
+    )
+    
 if __name__ == "__main__":
-    lat = test_data["destLat"]
-    long = test_data["destLong"]
-    lat = 33.58696825
-    long = 130.39492071
-    get_building_height(lat, long)
+    download_blob("air-pin-backend", "bldg/50301228_bldg_6697_op.gml", "50301228_bldg_6697_op.gml")
     

@@ -1,2 +1,4 @@
 .env
 *_op/
+__pycache__
+*.gml
