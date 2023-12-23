@@ -12,10 +12,12 @@ async def height(destName:str, destAddress:str, destLat:float, destLong:float):
     if ceiling_height is None:
         ceiling_height = 3.0
     floor_level = get_floor_level(destAddress)
+    print("floor_level", floor_level)
     if floor_level > 0:
         target_height = (floor_level - 1) * ceiling_height
     else:
         target_height = floor_level * ceiling_height
+    print(target_height)
     return {"target_height": target_height, "floor_level": floor_level, "ceiling_height":ceiling_height}
 
 @height_router.get("/test")
