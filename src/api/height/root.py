@@ -16,7 +16,7 @@ async def height(destName:str, destAddress:str, destLat:float, destLong:float):
         target_height = (floor_level - 1) * ceiling_height
     else:
         target_height = floor_level * ceiling_height
-    return {"target_height": ceiling_height, "floor_level": floor_level, "ceiling_height":ceiling_height}
+    return {"target_height": target_height, "floor_level": floor_level, "ceiling_height":ceiling_height}
 
 @height_router.get("/test")
 async def test():
