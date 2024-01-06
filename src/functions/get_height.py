@@ -17,7 +17,7 @@ def get_building_height(bldg_lat, bldg_long):
     if not os.path.isfile(path):
         download_blob("air-pin-backend", f"bldg/{path}", path)
     if not os.path.isfile(path):
-        return None
+        return None, None
     tree = ET.parse(path)
     namespaces = {node[0]: node[1] for _, node in ET.iterparse(path, events=['start-ns'])}
     for key, value in namespaces.items(): 
@@ -31,8 +31,8 @@ def get_building_height(bldg_lat, bldg_long):
                     # 経度と緯度に分割して取得
                     posList = gml_posList.text.split()
                     if isIncludePoint(dest, posList):
-                        ceiling_height = get_ceiling_height(building[0])
-                        return ceiling_height
+                        ceiling_height, level = get_ceiling_height(building[0])
+                        return ceiling_height, level
             continue
         foot_print = building[0].findall('{http://www.opengis.net/citygml/building/2.0}lod0FootPrint')
         if foot_print:
@@ -40,9 +40,9 @@ def get_building_height(bldg_lat, bldg_long):
                 # 経度と緯度に分割して取得
                 posList = gml_posList.text.split()
                 if isIncludePoint(dest, posList):
-                    ceiling_height = get_ceiling_height(building[0])
-                    return ceiling_height
-    return None
+                    ceiling_height, level = get_ceiling_height(building[0])
+                    return ceiling_height, level
+    return None, None
 
 def isIncludePoint(point, posList):
     # 目的地が建物に含まれるか判定
@@ -67,7 +67,7 @@ def get_ceiling_height(building:ET.Element):
     if height and level:
         ceiling_height = float(height)/float(level)
         print(ceiling_height)
-    return ceiling_height
+    return ceiling_height, level
 
 def get_meshcode(lat, long):
     # meshcodeを緯度経度から探索
