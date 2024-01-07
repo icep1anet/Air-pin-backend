@@ -51,6 +51,7 @@ def isIncludePoint(point, posList):
     return poly.contains(point)
 
 def get_ceiling_height(building:ET.Element):
+    ceiling_height = None
     print("found")
     height = building.findall('{http://www.opengis.net/citygml/building/2.0}measuredHeight')
     if height:
