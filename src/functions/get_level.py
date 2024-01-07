@@ -4,7 +4,7 @@ import unicodedata
 import pandas as pd
 
 # , r"B(\d)+?F?, r"(地下)?\s*?(\d)+?(F)?","
-ptrs = [r"(B|地下)?\s*?(\d)+?(F)?"]
+ptrs = [r"(b|地下)?\s*?(\d)+?(F)?"]
 compiled_ptrs = [re.compile(ptr) for ptr in ptrs]
 post_code_ptrs = [r"〒?[0-9]{3}-[0-9]{4}", r"〒?[0-9]{7}"]
 compiled_post_code_ptrs = [re.compile(ptr) for ptr in post_code_ptrs]
@@ -25,13 +25,14 @@ def address_cleansing(address):
     address = address.replace("階", "F")
     for post_code_ptr in compiled_post_code_ptrs:
         address = re.sub(post_code_ptr, "", address)
+    address = address.lower()
     splited_address = address.split()
     for index in range(len(splited_address)):
         for prefecture in prefectures:
             if prefecture in splited_address[index]:
                 if len(splited_address) > 1:
                     del splited_address[index]
-                    address = "".join(splited_address[:])
+                    address = " ".join(splited_address[:])
                     return address
     return address
 
@@ -67,4 +68,5 @@ def get_floor(address):
 
 def get_floor_level(address):
     address = address_cleansing(address)
+    print(address)
     return get_floor(address)
