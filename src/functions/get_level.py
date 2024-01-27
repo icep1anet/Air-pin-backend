@@ -4,7 +4,7 @@ import unicodedata
 import pandas as pd
 
 # , r"B(\d)+?F?, r"(地下)?\s*?(\d)+?(F)?","
-ptrs = [r"(b|地下)?\s*?(\d)+?(F)?"]
+ptrs = [r"(b|地下)?\s*?(\d)+?(f|F)?"]
 compiled_ptrs = [re.compile(ptr) for ptr in ptrs]
 post_code_ptrs = [r"〒?[0-9]{3}-[0-9]{4}", r"〒?[0-9]{7}"]
 compiled_post_code_ptrs = [re.compile(ptr) for ptr in post_code_ptrs]
@@ -55,6 +55,7 @@ def get_floor(address):
                     elif match_object.group(3):
                         level = int(match_object.group(2))
                     else:
+                        level = int(match_object.group(2))
                         continue
             print("level", level)
     if level == 0:
